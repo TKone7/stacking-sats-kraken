@@ -20,6 +20,9 @@ Generate a new API key dedicated for stacking using the "Query Funds" and "Modif
 
 ![Kraken API Key Permissions](./api-permissions.png)
 
+Only check the "Withdraw Funds" option if you plan to automatically withdraw Bitcoin from Kraken.
+See details below.
+
 ## 📦 Setup
 
 Prerequisite: At least the current LTS version of [Node.js](https://nodejs.org/).
@@ -33,16 +36,21 @@ npm install
 Setup the environment variables for the script:
 
 ```sh
+# used to authenticate with Kraken
 export KRAKEN_API_KEY="apiKeyFromTheKrakenSettings"
 export KRAKEN_API_SECRET="privateKeyFromTheKrakenSettings"
+# used for buying
 export KRAKEN_API_FIAT="USD" # the governmental shitcoin you are selling
 export KRAKEN_BUY_AMOUNT=21 # fiat amount you trade for the future of money
+# used for withdrawal
+export KRAKEN_MAX_REL_FEE=0.5 # maximum fee in % that you are willing to pay
+export KRAKEN_WITHDRAW_KEY="descriptionOfWithdrawalAddress"
 ```
 
 Use a dry run to test the script and see the output without placing an order:
 
 ```sh
-npm test
+npm run test:stack-sats
 ```
 
 You should see something like this sample output:
@@ -97,6 +105,78 @@ To: $recipient $result" | /usr/sbin/sendmail $recipient
 Make it executable with `chmod +x stack-sats.sh` and go wild.
 
 [Stay humble!](https://twitter.com/matt_odell/status/1117222441867194374) 🙏
+
+## 🔑 Withdrawal
+
+Holding significant amounts on an exchange is never a good idea.
+You should regularly take ownership of your coins by withdrawing to your own wallet.
+This can either be done manually or it can be automated.
+The script provided here will only withdraw to a previously defined Bitcoin address if the relative fees do not exceed a certain limit.
+
+*It is optional to run the withdrawal script.*
+
+### Example 1
+
+- Max. relative fee: 0.5%
+- Fixed Kraken fee: ₿ 0.00050
+- Balance: ₿ 0.06000
+➡️ No withdrawal since fee actual (0.83%) is too high
+
+### Example 2
+
+- Max. relative fee: 0.5%
+- Fixed Kraken fee: ₿ 0.00050
+- Balance: ₿ 0.12000
+➡️ Withdrawal executed since actual fee (0.42%) is low enough
+
+In case you plan to automatically withdraw from Kraken, a withdrawal method must first be defined.
+If you already set up a methode you can reuse it.
+Otherwise generate a new one by going to **Funding > Bitcoin (XBT) withdraw > Add address**.
+The description field will later be used as an environment variable in the script.
+
+To test the withdrawal of funds to your defined address run:
+
+```sh
+npm run test:withdraw-sats
+```
+
+You should see something like this:
+
+```text
+💡  Relative fee of withdrawal amount: 5.57%
+❌  Fee is too high – max rel. fee: 0.50%
+```
+
+It is recommended to run the withdrawal script every time you stacked sats:
+
+```sh
+npm run withdraw-sats
+```
+
+Since it can take a couple seconds or minutes for your order to fill, you should run the following script a couple hours later after your `stack-sats` script.
+Just set up a second cron job which executes the following script.
+
+Here's a sample `withdraw-sats.sh` script:
+
+```sh
+#!/bin/bash
+set -e
+
+# hide deprecation warning
+export NODE_OPTIONS="--no-deprecation"
+
+export KRAKEN_API_KEY="apiKeyFromTheKrakenSettings"
+export KRAKEN_API_SECRET="privateKeyFromTheKrakenSettings"
+export KRAKEN_MAX_REL_FEE=0.5
+export KRAKEN_WITHDRAW_KEY="descriptionOfWithdrawalAddress"
+
+BASE_DIR=$(cd `dirname $0` && pwd)
+cd $BASE_DIR/stacking-sats-kraken
+result=$(npm run withdraw-sats 2>&1)
+echo $result
+```
+
+Make it executable with `chmod +x withdraw-sats.sh` and add it to your cron schedule.
 
 ## ⚡️ RaspiBlitz Integration
 
