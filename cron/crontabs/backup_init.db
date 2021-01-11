@@ -1,0 +1,2 @@
+{"name":"Withdraw from exchange","command":"/src/withdraw-sats.sh","schedule":"* * * * *","stopped":true,"timestamp":"Mon Dec 21 2020 16:05:51 GMT+0100 (Central European Standard Time)","logging":"true","mailing":{},"created":1608563151058,"saved":false,"_id":"72dRLVs2uWYXXuEn"}
+{"name":"Stack sats","command":"/src/stack-sats.sh","schedule":"* * * * *","stopped":true,"timestamp":"Mon Dec 21 2020 16:02:05 GMT+0100 (Central European Standard Time)","logging":"true","mailing":{},"created":1608562925159,"saved":false,"_id":"tJei5oxVH2HCyVeg"}

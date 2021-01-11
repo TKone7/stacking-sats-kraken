@@ -6,9 +6,10 @@ module.exports = async (kraken, validate, getEnv) => {
   const withdrawdetails = { asset, key, amount: 0 }
 
   // Get withdrawal information
-  const { result: { limit, fee } } = await kraken.api('WithdrawInfo', withdrawdetails)
+  const { result: { limit, fee, method } } = await kraken.api('WithdrawInfo', withdrawdetails)
   const relFee = 1/parseFloat(limit)*parseFloat(fee)
 
+  console.log(`💡  Withdrawing the max amount of ${limit} ${method} would cost a fee of ${fee}`)
   console.log(`💡  Relative fee of withdrawal amount: ${(relFee*100).toFixed(2)}%`)
 
   // Place withdrawal when fee is low enough (relatively)
