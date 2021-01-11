@@ -9,8 +9,10 @@
   "scripts": {
     "stack-sats": "node index.js --cmd=stack",
     "withdraw-sats": "node index.js --cmd=withdraw",
+    "sell-sats": "node index.js --cmd=sell",
     "test:stack-sats": "node index.js --cmd=stack --validate",
-    "test:withdraw-sats": "node index.js --cmd=withdraw --validate"
+    "test:withdraw-sats": "node index.js --cmd=withdraw --validate",
+    "test:sell-sats": "node index.js --cmd=sell --validate"
   },
   "dependencies": {
     "kraken-api": "1.0.0"

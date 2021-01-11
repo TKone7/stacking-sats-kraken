@@ -1,5 +1,5 @@
 module.exports = async (kraken, validate, getEnv) => {
-  const [fiat, amount] = getEnv('KRAKEN_API_FIAT', 'KRAKEN_BUY_AMOUNT')
+  const [fiat, amount] = getEnv('KRAKEN_API_FIAT', 'KRAKEN_SELL_AMOUNT')
 
   // https://www.kraken.com/features/api
   const crypto = 'XBT'
@@ -14,7 +14,7 @@ module.exports = async (kraken, validate, getEnv) => {
   const [{ a: [a], b: [b] }] = Object.values(ticker)
   const ask = parseFloat(a)
   const bid = parseFloat(b)
-  const price = bid
+  const price = ask
 
   // Calculate volume and adjust precision
   const volume = (amount / price).toFixed(8)
@@ -24,7 +24,7 @@ module.exports = async (kraken, validate, getEnv) => {
   console.log('📉  Bid:', bid, fiat, '\n')
 
   // Place order
-  const details = { pair, type: 'buy', ordertype: 'limit', price, volume }
+  const details = { pair, type: 'sell', ordertype: 'limit', price, volume }
   if (validate) details.validate = true
 
   const { result: { descr: { order }, txid } } = await kraken.api('AddOrder', details)
